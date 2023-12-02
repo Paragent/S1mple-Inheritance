@@ -1,34 +1,22 @@
 #include <iostream>
 #include <string>
+#include <vector>
 
 using namespace std;
 
 class Human {
-private:
+protected:
     string name;
     int age;
     bool sex;
-    string status;
     string city;
-    bool famStatus;
-    string favMusicGenre;
 
 public:
-    Human(string name, int age, bool sex, string status, string city, bool married, string music)
-        : name(name), age(age), sex(sex), status(status), city(city), famStatus(married), favMusicGenre(music) {
+    Human(string name, int age, bool sex, string city)
+        : name(name), age(age), sex(sex), city(city) {
     }
 
-    friend std::ostream& operator<<(ostream& os, const Human& person) {
-        os << "Name: " << person.name << endl;
-        os << "Age: " << person.age << endl;
-        os << "Sex: " << (person.sex? "Male": "Female") << endl;
-        os << "Status: " << person.status << endl;
-        os << "City: " << person.city << endl;
-        os << "Family status: " << (person.famStatus? "Married":"Single") << endl;
-        os << "Favourite music genre: " << person.favMusicGenre << endl;
-        os << "--------------------------" << endl;
-        return os;
-    }
+    friend std::ostream& operator<<(ostream& os, const Human& Human);
 
     string getCity() const {
         return city;
@@ -39,40 +27,79 @@ public:
     }
 
     string getSex() const {
-        return sex? "Male":"Female";
+        return sex ? "Male" : "Female";
     }
-
-    bool getFamilyStatus() const {
-        return famStatus;
-    }
-
-    void setFamilyStatus(const bool& newFamilyStatus) {
-        famStatus = newFamilyStatus;
-    }
-
-    string getFavoriteMusicGenre() const {
-        return favMusicGenre;
-    }
-
-    void setFavoriteMusicGenre(const string& newFavoriteMusicGenre) {
-        favMusicGenre = newFavoriteMusicGenre;
-    }
-
 };
 
+std::ostream& operator<<(ostream& os, const Human& Human) {
+    os << "Name: " << Human.name << endl;
+    os << "Age: " << Human.age << endl;
+    os << "Sex: " << (Human.sex ? "Male" : "Female") << endl;
+    os << "City: " << Human.city << endl;
+    os << "--------------------------" << endl;
+    return os;
+}
+
+class Musician : public Human {
+private:
+    string nick;
+    string mainInstrument;
+    string musicGenre;
+    vector<string> albums;
+
+public:
+    Musician(string name, int age, bool sex, string city, string nick, string instrument, string music)
+        : Human(name, age, sex, city), nick(nick), mainInstrument(instrument), musicGenre(music) {
+    }
+
+    void addAlbum(const string& album) {
+        albums.push_back(album);
+    }
+
+    vector<string> getAlbums() const {
+        return albums;
+    }
+
+    string getGenre() const {
+        return musicGenre;
+    }
+
+    void setInstrument(const string& newInstrument) {
+        mainInstrument = newInstrument;
+    }
+
+    string getInstrument() {
+        return mainInstrument;
+    }
+
+    friend std::ostream& operator<<(ostream& os, const Musician& musicHuman);
+};
+
+std::ostream& operator<<(ostream& os, const Musician& musicHuman) {
+    os << static_cast<const Human&>(musicHuman); 
+    os << "Nick: " << musicHuman.nick << endl;
+    os << "Main Instrument: " << musicHuman.mainInstrument << endl;
+    os << "Music Genre: " << musicHuman.musicGenre << endl;
+    os << "--------------------------" << endl;
+    return os;
+}
+
+
+
 int main() {
-    Human person1("Max", 10, true, "Programmer", "Ussuriisk", true, "Rock");
-    Human person2("Marina", 25, false, "Teacher", "Ussuriisk", false, "Rap");
-    Human person3("Katya", 19, false, "Student", "Ussuriisk", true, "Reggae");
+    Human human("Alice", 22, false, "Moscow");
+    cout << human.getCity() << endl;
+    human.setCity("Ussuriisk");
+    cout << human.getSex() << endl;
+    cout << human;
 
-    cout << person1 << person2 << person3;
 
-    person2.setCity("Vladivostok");
-    cout << person2.getCity() << endl;
-
-    Human person4("Oleg", 53, true, "Unemployed", "Moscow", false, "Chanson");
-    cout << person4;
-    cout << person4.getSex();
+    Musician musician("Oleg", 19, true, "Vladivostok", "GuitarHero", "Guitar", "Rock");
+    cout << musician << endl;
+    musician.addAlbum("Toxicity");
+    musician.addAlbum("Rammstein");
+    musician.setCity("Moscow");
+    cout << musician.getInstrument() << endl;
 
     return 0;
 }
